@@ -1,0 +1,27 @@
+{
+  "name": "jusclagames",
+  "version": "1.0.0",
+  "description": "Discord bot with Roulette and Blackjack games",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node tests/test-games.js && node tests/test-balance.js && node tests/test-ui.js && node tests/test-blackjack-economy.js && node tests/test-userdata.js && node tests/test-crates.js"
+  },
+  "keywords": [
+    "discord",
+    "games",
+    "roulette",
+    "blackjack",
+    "bot"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "axios": "^1.20.0",
+    "discord.js": "^14.27.0",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "mongoose": "^9.9.5"
+  }
+}
