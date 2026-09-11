@@ -1,5 +1,10 @@
 'use strict';
 
+// Prefer IPv4 for outbound connections (MongoDB Atlas / Discord REST) to
+// avoid IPv6 resolution stalls on networks with broken IPv6 routing.
+const dns = require('node:dns');
+dns.setDefaultResultOrder('ipv4first');
+
 // okay so this not is for anybody read this.code is messed up,my cline token ended also i'm
 // tired of coding this shit.can do anything with it.
 
@@ -178,14 +183,13 @@ client.on('interactionCreate', async interaction => {
         }
 
         // Never let a failure to respond crash the process. The interaction
-        // may already be replied/deferred (in which case we follow up), or it
-        // may have expired (DiscordAPIError[10062]), in which case we just log.
+        // may already be deferred/replied (in which case we edit the reply so
+        // it never hangs), or it may have expired (10062), in which case we log.
         try {
-            const payload = { content: errorMessage, flags: MessageFlags.Ephemeral };
-            if (interaction.replied || interaction.deferred) {
-                await interaction.followUp(payload);
+            if (interaction.deferred || interaction.replied) {
+                await interaction.editReply({ content: errorMessage });
             } else {
-                await interaction.reply(payload);
+                await interaction.reply({ content: errorMessage, flags: MessageFlags.Ephemeral });
             }
         } catch (respondError) {
             // Interaction already timed out (10062), already acknowledged (40060),
@@ -222,10 +226,12 @@ process.on('unhandledRejection', reason => {
     console.error('❌ Unhandled promise rejection:', reason);
 });
 
-process.on('uncaughtExceptionMonitor', error => {
+process.on('uncaughtException', error => {
     if (isNetworkError(error)) {
-        console.warn('⚠️ Ignored uncaught exception (transient network error):', error.message);
+        console.warn('⚠️ Uncaught exception (transient network error):', error.message);
+        return;
     }
+    console.error('❌ Uncaught exception:', error && error.stack ? error.stack : error);
 });
 
 // --- Command (re)registration ------------------------------------------------
@@ -268,7 +274,7 @@ async function registerCommands() {
 (async () => {
     // Connect to MongoDB Atlas before anything else.
     try {
-        await mongoose.connect(process.env.DATABASE_URL);
+        await mongoose.connect(process.env.DATABASE_URL, { serverSelectionTimeoutMS: 5000 });
         console.log('✅ Connected to MongoDB Atlas');
     } catch (error) {
         console.error('❌ Failed to connect to MongoDB:', error.message);
