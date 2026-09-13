@@ -3,160 +3,30 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Jusgamble — Entertainment Discord Bot</title>
-  <style>
-    :root {
-      --bg: #2B2D31;
-      --bg-elevated: #1E1F22;
-      --bg-card: #313338;
-      --text: #DBDEE1;
-      --text-muted: #949BA4;
-      --heading: #F2F3F5;
-      --accent: #5865F2;
-      --accent-hover: #4752C4;
-      --border: #3F4147;
-      --success: #57F287;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: "gg sans", "Whitney", "Helvetica Neue", Helvetica, Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-    .topbar {
-      background: var(--bg-elevated);
-      border-bottom: 1px solid var(--border);
-      padding: 1rem 1.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      text-decoration: none;
-      color: var(--heading);
-      font-weight: 700;
-      font-size: 1.1rem;
-    }
-    .brand-mark {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent), #7289DA);
-      display: grid;
-      place-items: center;
-      font-size: 0.9rem;
-    }
-    nav a {
-      color: var(--text-muted);
-      text-decoration: none;
-      margin-left: 1.25rem;
-      font-size: 0.9rem;
-      transition: color 0.15s ease;
-    }
-    nav a:hover, nav a.active { color: var(--heading); }
-    main {
-      flex: 1;
-      width: 100%;
-      max-width: 720px;
-      margin: 0 auto;
-      padding: 3.5rem 1.5rem 4rem;
-      display: flex;
-      align-items: center;
-    }
-    .card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 3rem 2.5rem;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
-      width: 100%;
-      text-align: center;
-    }
-    .eyebrow {
-      display: inline-block;
-      color: var(--success);
-      font-size: 0.8rem;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      margin-bottom: 0.75rem;
-    }
-    h1 {
-      color: var(--heading);
-      font-size: 2.25rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      margin-bottom: 0.75rem;
-    }
-    .tagline {
-      color: var(--text-muted);
-      font-size: 1.05rem;
-      margin-bottom: 2rem;
-    }
-    .cta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      justify-content: center;
-    }
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 0.95rem;
-      padding: 0.7rem 1.4rem;
-      border-radius: 8px;
-      transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
-    }
-    .btn-primary {
-      background: var(--accent);
-      color: #FFFFFF;
-      border: 1px solid var(--accent);
-    }
-    .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
-    .btn-secondary {
-      background: transparent;
-      color: var(--text);
-      border: 1px solid var(--border);
-    }
-    .btn-secondary:hover { color: var(--heading); border-color: var(--accent); }
-    footer {
-      text-align: center;
-      color: var(--text-muted);
-      font-size: 0.8rem;
-      padding: 1.5rem;
-      border-top: 1px solid var(--border);
-    }
-  </style>
+  <title>Jusgamble</title>
+  <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
   <header class="topbar">
-    <a href="/" class="brand">
+    <a href="/" class="brand" id="brand">
       <span class="brand-mark">J</span>
-      Jusgamble
+      <span>Jusgamble</span>
     </a>
-    <nav>
-      <a href="/terms">Terms of Service</a>
-      <a href="/privacy">Privacy Policy</a>
-    </nav>
+    <div class="nav-right">
+      <nav class="nav-links">
+        <a href="/terms">Terms of Service</a>
+        <a href="/privacy">Privacy Policy</a>
+      </nav>
+      <div class="auth-area" id="auth-area">
+        <a class="btn btn-primary btn-sm" href="/auth/discord">Login with Discord</a>
+      </div>
+    </div>
   </header>
 
   <main>
     <section class="card">
-      <span class="eyebrow">Entertainment · No real-money gambling</span>
       <h1>Jusgamble</h1>
-      <p class="tagline">Your all-in-one Discord casino &amp; economy bot — games, in-bot credits, daily rewards, and a role shop.</p>
+      <p class="tagline">The all-in-one Discord entertainment bot — casino games, a full economy, and daily rewards, all in one place.</p>
       <div class="cta">
         <a class="btn btn-primary" href="https://discord.com/oauth2/authorize?client_id=1527346196845170740&permissions=5066687020256320&integration_type=0&scope=bot+applications.commands" target="_blank" rel="noopener noreferrer">Invite Bot</a>
         <a class="btn btn-secondary" href="/terms">Terms of Service</a>
@@ -166,7 +36,9 @@
   </main>
 
   <footer>
-    © 2026 Jusgamble · Entertainment bot · No real-money gambling
+    © 2026 Jusgamble
   </footer>
+
+  <script src="/app.js" defer></script>
 </body>
 </html>

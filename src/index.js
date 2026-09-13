@@ -335,18 +335,97 @@ async function registerCommands() {
 
 
 const express = require('express');
+const session = require('express-session');
+const passport = require('passport');
+const DiscordStrategy = require('passport-discord').Strategy;
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Absolute path to the `docs` folder (project root/docs), independent of cwd.
 const docsDir = path.join(__dirname, '..', 'docs');
 
-// Friendly URL routes (registered before static so they take precedence).
+// --- Discord OAuth2 (Passport) -------------------------------------------
+const SESSION_SECRET = process.env.SESSION_SECRET || 'jusgamble-dev-secret-change-me';
+if (!process.env.SESSION_SECRET) {
+    console.warn('⚠️ SESSION_SECRET is not set — using an insecure dev fallback.');
+}
+
+app.use(session({
+    secret: SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false, httpOnly: true, maxAge: 7 * 24 * 60 * 60 * 1000 }
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Store a compact session object (never the whole profile).
+passport.serializeUser((user, done) => {
+    done(null, { id: user.id, username: user.username, avatar: user.avatar });
+});
+passport.deserializeUser((obj, done) => {
+    done(null, obj);
+});
+
+const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID;
+const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
+const DISCORD_REDIRECT_URI = process.env.DISCORD_REDIRECT_URI;
+const oauthEnabled = Boolean(DISCORD_CLIENT_ID && DISCORD_CLIENT_SECRET && DISCORD_REDIRECT_URI);
+
+if (oauthEnabled) {
+    passport.use(new DiscordStrategy({
+        clientID: DISCORD_CLIENT_ID,
+        clientSecret: DISCORD_CLIENT_SECRET,
+        callbackURL: DISCORD_REDIRECT_URI,
+        scope: ['identify']
+    }, (accessToken, refreshToken, profile, done) => {
+        done(null, {
+            id: profile.id,
+            username: profile.username,
+            avatar: profile.avatar
+        });
+    }));
+    console.log('🔐 Discord OAuth2 enabled (client ' + DISCORD_CLIENT_ID + ').');
+} else {
+    console.warn('⚠️ Discord OAuth2 disabled — set DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET, and DISCORD_REDIRECT_URI in .env.');
+}
+
+// --- Authentication routes -------------------------------------------------
+app.get('/auth/discord', (req, res, next) => {
+    if (!oauthEnabled) {
+        return res.status(503).send('Discord OAuth2 is not configured on this server.');
+    }
+    passport.authenticate('discord', { scope: ['identify'] })(req, res, next);
+});
+
+app.get('/auth/discord/callback',
+    passport.authenticate('discord', { failureRedirect: '/' }),
+    (req, res) => res.redirect('/')
+);
+
+app.get('/auth/logout', (req, res) => {
+    req.logout((err) => {
+        if (err) { console.warn('⚠️ logout error:', err.message || err); }
+        req.session.destroy(() => {
+            res.redirect('/');
+        });
+    });
+});
+
+app.get('/api/user', (req, res) => {
+    if (req.isAuthenticated()) {
+        return res.json({ loggedIn: true, user: req.user });
+    }
+    return res.json({ loggedIn: false });
+});
+
+// --- Static docs + friendly routes ----------------------------------------
 app.get('/', (req, res) => res.sendFile(path.join(docsDir, 'index.html')));
 app.get(['/terms', '/tos'], (req, res) => res.sendFile(path.join(docsDir, 'terms.html')));
 app.get('/privacy', (req, res) => res.sendFile(path.join(docsDir, 'privacy.html')));
 
-// Serve the rest of the `docs` folder statically (e.g. /terms.html, /privacy.html).
 app.use(express.static(docsDir));
 
 app.listen(PORT, () => {

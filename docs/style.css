@@ -1,0 +1,182 @@
+:root {
+  --bg: #2B2D31;
+  --bg-elevated: #1E1F22;
+  --bg-card: #313338;
+  --text: #DBDEE1;
+  --text-muted: #949BA4;
+  --heading: #F2F3F5;
+  --accent: #5865F2;
+  --accent-hover: #4752C4;
+  --border: #3F4147;
+  --success: #57F287;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: "gg sans", "Whitney", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Navbar ─────────────────────────────────────────────── */
+.topbar {
+  background: var(--bg-elevated);
+  border-bottom: 1px solid var(--border);
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  color: var(--heading);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.brand-mark {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), #7289DA);
+  display: grid;
+  place-items: center;
+  font-size: 0.9rem;
+  color: #FFFFFF;
+  flex: none;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.nav-links { display: flex; align-items: center; }
+
+.nav-links a {
+  color: var(--text-muted);
+  text-decoration: none;
+  margin-left: 1.25rem;
+  font-size: 0.9rem;
+  transition: color 0.15s ease;
+}
+
+.nav-links a:hover { color: var(--heading); }
+
+/* Logged-in user chip (replaces the logo) */
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--accent), #7289DA);
+  flex: none;
+}
+.user-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.user-avatar-letter { color: #FFFFFF; font-weight: 700; font-size: 0.9rem; }
+.user-name { font-size: 0.95rem; font-weight: 600; color: var(--heading); }
+
+/* ── Buttons ────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 0.7rem 1.4rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease,
+    transform 0.12s ease, box-shadow 0.2s ease;
+}
+.btn-primary {
+  background: var(--accent);
+  color: #FFFFFF;
+  border: 1px solid var(--accent);
+}
+.btn-primary:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(88, 101, 242, 0.35);
+}
+.btn-secondary {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.btn-secondary:hover {
+  color: var(--heading);
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+.btn:active { transform: translateY(0); }
+.btn-sm { padding: 0.5rem 1rem; font-size: 0.85rem; }
+
+/* ── Hero ───────────────────────────────────────────────── */
+main {
+  flex: 1;
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 3.5rem 1.5rem 4rem;
+  display: flex;
+  align-items: center;
+}
+.card {
+  position: relative;
+  background: linear-gradient(180deg, #34373D 0%, var(--bg-card) 100%);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 3rem 2.75rem;
+  box-shadow:
+    0 0 0 1px rgba(88, 101, 242, 0.10),
+    0 24px 60px rgba(0, 0, 0, 0.45),
+    0 0 60px rgba(88, 101, 242, 0.16);
+  width: 100%;
+  text-align: center;
+}
+h1 {
+  color: var(--heading);
+  font-size: 2.4rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin-bottom: 0.9rem;
+}
+.tagline {
+  color: var(--text-muted);
+  font-size: 1.02rem;
+  margin: 0 auto 2rem;
+  max-width: 34rem;
+}
+.cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  justify-content: center;
+}
+
+footer {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  padding: 1.5rem;
+  border-top: 1px solid var(--border);
+}
