@@ -369,16 +369,20 @@ passport.deserializeUser((obj, done) => {
     done(null, obj);
 });
 
-const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID;
-const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
-const DISCORD_REDIRECT_URI = process.env.DISCORD_REDIRECT_URI;
-const oauthEnabled = Boolean(DISCORD_CLIENT_ID && DISCORD_CLIENT_SECRET && DISCORD_REDIRECT_URI);
+console.log('OAuth Config Loaded:', !!process.env.DISCORD_CLIENT_ID);
+
+// The check references the exact environment variable names.
+const oauthEnabled = Boolean(
+    process.env.DISCORD_CLIENT_ID &&
+    process.env.DISCORD_CLIENT_SECRET &&
+    process.env.DISCORD_REDIRECT_URI
+);
 
 if (oauthEnabled) {
     passport.use(new DiscordStrategy({
-        clientID: DISCORD_CLIENT_ID,
-        clientSecret: DISCORD_CLIENT_SECRET,
-        callbackURL: DISCORD_REDIRECT_URI,
+        clientID: process.env.DISCORD_CLIENT_ID,
+        clientSecret: process.env.DISCORD_CLIENT_SECRET,
+        callbackURL: process.env.DISCORD_REDIRECT_URI,
         scope: ['identify']
     }, (accessToken, refreshToken, profile, done) => {
         done(null, {
@@ -387,9 +391,13 @@ if (oauthEnabled) {
             avatar: profile.avatar
         });
     }));
-    console.log('🔐 Discord OAuth2 enabled (client ' + DISCORD_CLIENT_ID + ').');
+    console.log('🔐 Discord OAuth2 enabled (client ' + process.env.DISCORD_CLIENT_ID + ').');
 } else {
-    console.warn('⚠️ Discord OAuth2 disabled — set DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET, and DISCORD_REDIRECT_URI in .env.');
+    const missing = [];
+    if (!process.env.DISCORD_CLIENT_ID) missing.push('DISCORD_CLIENT_ID');
+    if (!process.env.DISCORD_CLIENT_SECRET) missing.push('DISCORD_CLIENT_SECRET');
+    if (!process.env.DISCORD_REDIRECT_URI) missing.push('DISCORD_REDIRECT_URI');
+    console.warn('⚠️ Discord OAuth2 disabled — missing env vars: ' + (missing.join(', ') || 'none'));
 }
 
 // --- Authentication routes -------------------------------------------------
