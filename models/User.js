@@ -12,8 +12,15 @@ const gameStatsSchema = new mongoose.Schema({
     played: { type: Number, default: 0 }
 }, { _id: false });
 
+// Purchased shop roles (owned across the bot — role IDs are globally unique).
+const inventoryItemSchema = new mongoose.Schema({
+    roleId: { type: String, required: true },
+    purchasedAt: { type: Date, default: Date.now }
+}, { _id: false });
+
 const userSchema = new mongoose.Schema({
     userId: { type: String, required: true, unique: true },
+    guildId: { type: String, default: null },
     username: { type: String, default: '' },
     avatarUrl: { type: String, default: '' },
     balance: { type: Number, default: STARTING_BALANCE },
@@ -26,6 +33,7 @@ const userSchema = new mongoose.Schema({
     totalLosses: { type: Number, default: 0 },
     totalWagered: { type: Number, default: 0 },
     games: { type: Map, of: gameStatsSchema, default: {} },
+    inventory: { type: [inventoryItemSchema], default: [] },
     // Unopened crates grouped by rarity (see games/crates.js).
     crates: {
         common:    { type: Number, default: 0 },

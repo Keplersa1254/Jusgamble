@@ -10,6 +10,8 @@ const crate = require('../src/commands/crate');
 const inventory = require('../src/commands/inventory');
 const crateinfo = require('../src/commands/crateinfo');
 const vote = require('../src/commands/vote');
+const settings = require('../src/commands/settings');
+const role = require('../src/commands/role');
 const ui = require('../utils/ui');
 
 let pass = 0;
@@ -28,6 +30,8 @@ assert(crate.data.name === 'crate', 'crate command exported');
 assert(inventory.data.name === 'inventory', 'inventory command exported');
 assert(crateinfo.data.name === 'crateinfo', 'crateinfo command exported');
 assert(vote.data.name === 'vote', 'vote command exported');
+assert(settings.data.name === 'settings', 'settings command exported');
+assert(role.data.name === 'role', 'role command exported');
 assert(typeof blackjack.registerButtonHandler === 'function', 'blackjack button handler exported');
 
 console.log('\n=== UI Palette ===');

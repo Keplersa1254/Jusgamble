@@ -24,6 +24,7 @@ const fs = require('fs');
 const path = require('path');
 const { Client, Collection, GatewayIntentBits, REST, Routes, MessageFlags } = require('discord.js');
 const userdata = require('../games/userdata'); // Mongoose profile / progress store
+const Guild = require('../models/Guild'); // Server config (role shop + allowed channels)
 
 // --- Configuration (check here if you gonna beat my code's ass up)
 
@@ -155,6 +156,27 @@ client.on('interactionCreate', async interaction => {
     if (!command) return;
 
     try {
+        // ── Channel restriction guard ──────────────────────────────────────
+        // The `/settings` command is always allowed so admins can configure
+        // restrictions from any channel. Every other command is blocked here
+        // if the guild has a non-empty `allowedChannels` list and the current
+        // channel isn't in it.
+        if (interaction.commandName !== 'settings' && interaction.guild) {
+            const guildData = await Guild.findOne({ guildId: interaction.guild.id });
+            console.log('Allowed Channels in DB:', guildData && guildData.allowedChannels);
+
+            if (guildData &&
+                guildData.allowedChannels &&
+                guildData.allowedChannels.length > 0 &&
+                !guildData.allowedChannels.includes(interaction.channelId)) {
+                const channelsList = guildData.allowedChannels.map((id) => '<#' + id + '>').join(', ');
+                return interaction.reply({
+                    content: '❌ Commands can only be used in: ' + channelsList,
+                    ephemeral: true
+                });
+            }
+        }
+
         await command.execute(interaction);
 
         // Track usage/progress in the JSON userdata store (best-effort).
