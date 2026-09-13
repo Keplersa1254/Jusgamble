@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Jusgamble</title>
+    <style>
+        :root {
+            --gold: #e5a93c;
+            --bg: #17181c;
+            --panel: #1f2126;
+            --text: #e8e6e3;
+            --muted: #a8a5a0;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        .card {
+            background: var(--panel);
+            max-width: 480px;
+            width: 100%;
+            padding: 40px 32px;
+            border-radius: 16px;
+            text-align: center;
+            border: 1px solid #2a2c31;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+        }
+        h1 { color: var(--gold); font-size: 1.9rem; margin-bottom: 8px; }
+        p { color: var(--muted); line-height: 1.6; margin-bottom: 24px; }
+        .links { display: flex; flex-direction: column; gap: 12px; }
+        a {
+            display: block;
+            text-decoration: none;
+            color: var(--gold);
+            background: #26282e;
+            padding: 14px 16px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: background 0.15s ease;
+        }
+        a:hover { background: #2e3138; }
+    </style>
+</head>
+<body>
+    <main class="card">
+        <h1>🎲 Jusgamble</h1>
+        <p>Your all-in-one Discord casino &amp; economy bot.</p>
+        <nav class="links">
+            <a href="/terms">📄 Terms of Service</a>
+            <a href="/privacy">🔒 Privacy Policy</a>
+        </nav>
+    </main>
+</body>
+</html>

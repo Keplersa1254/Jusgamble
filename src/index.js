@@ -338,9 +338,16 @@ const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.get('/', (req, res) => {
-    res.send('Bot aktif ve çalışıyor!');
-});
+// Absolute path to the `docs` folder (project root/docs), independent of cwd.
+const docsDir = path.join(__dirname, '..', 'docs');
+
+// Friendly URL routes (registered before static so they take precedence).
+app.get('/', (req, res) => res.sendFile(path.join(docsDir, 'index.html')));
+app.get(['/terms', '/tos'], (req, res) => res.sendFile(path.join(docsDir, 'terms.html')));
+app.get('/privacy', (req, res) => res.sendFile(path.join(docsDir, 'privacy.html')));
+
+// Serve the rest of the `docs` folder statically (e.g. /terms.html, /privacy.html).
+app.use(express.static(docsDir));
 
 app.listen(PORT, () => {
     console.log(`🌐 Web sunucusu ${PORT} portunda başlatıldı.`);
