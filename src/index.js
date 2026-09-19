@@ -335,106 +335,12 @@ async function registerCommands() {
 
 
 const express = require('express');
-const session = require('express-session');
-const passport = require('passport');
-const DiscordStrategy = require('passport-discord').Strategy;
-
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Absolute path to the `docs` folder (project root/docs), independent of cwd.
-const docsDir = path.join(__dirname, '..', 'docs');
-
-// --- Discord OAuth2 (Passport) -------------------------------------------
-const SESSION_SECRET = process.env.SESSION_SECRET || 'jusgamble-dev-secret-change-me';
-if (!process.env.SESSION_SECRET) {
-    console.warn('⚠️ SESSION_SECRET is not set — using an insecure dev fallback.');
-}
-
-app.use(session({
-    secret: SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    cookie: { secure: false, httpOnly: true, maxAge: 7 * 24 * 60 * 60 * 1000 }
-}));
-
-app.use(passport.initialize());
-app.use(passport.session());
-
-// Store a compact session object (never the whole profile).
-passport.serializeUser((user, done) => {
-    done(null, { id: user.id, username: user.username, avatar: user.avatar });
+app.get('/', (req, res) => {
+    res.send('Bot is running');
 });
-passport.deserializeUser((obj, done) => {
-    done(null, obj);
-});
-
-console.log('OAuth Config Loaded:', !!process.env.DISCORD_CLIENT_ID);
-
-// The check references the exact environment variable names.
-const oauthEnabled = Boolean(
-    process.env.DISCORD_CLIENT_ID &&
-    process.env.DISCORD_CLIENT_SECRET &&
-    process.env.DISCORD_REDIRECT_URI
-);
-
-if (oauthEnabled) {
-    passport.use(new DiscordStrategy({
-        clientID: process.env.DISCORD_CLIENT_ID,
-        clientSecret: process.env.DISCORD_CLIENT_SECRET,
-        callbackURL: process.env.DISCORD_REDIRECT_URI,
-        scope: ['identify']
-    }, (accessToken, refreshToken, profile, done) => {
-        done(null, {
-            id: profile.id,
-            username: profile.username,
-            avatar: profile.avatar
-        });
-    }));
-    console.log('🔐 Discord OAuth2 enabled (client ' + process.env.DISCORD_CLIENT_ID + ').');
-} else {
-    const missing = [];
-    if (!process.env.DISCORD_CLIENT_ID) missing.push('DISCORD_CLIENT_ID');
-    if (!process.env.DISCORD_CLIENT_SECRET) missing.push('DISCORD_CLIENT_SECRET');
-    if (!process.env.DISCORD_REDIRECT_URI) missing.push('DISCORD_REDIRECT_URI');
-    console.warn('⚠️ Discord OAuth2 disabled — missing env vars: ' + (missing.join(', ') || 'none'));
-}
-
-// --- Authentication routes -------------------------------------------------
-app.get('/auth/discord', (req, res, next) => {
-    if (!oauthEnabled) {
-        return res.status(503).send('Discord OAuth2 is not configured on this server.');
-    }
-    passport.authenticate('discord', { scope: ['identify'] })(req, res, next);
-});
-
-app.get('/auth/discord/callback',
-    passport.authenticate('discord', { failureRedirect: '/' }),
-    (req, res) => res.redirect('/')
-);
-
-app.get('/auth/logout', (req, res) => {
-    req.logout((err) => {
-        if (err) { console.warn('⚠️ logout error:', err.message || err); }
-        req.session.destroy(() => {
-            res.redirect('/');
-        });
-    });
-});
-
-app.get('/api/user', (req, res) => {
-    if (req.isAuthenticated()) {
-        return res.json({ loggedIn: true, user: req.user });
-    }
-    return res.json({ loggedIn: false });
-});
-
-// --- Static docs + friendly routes ----------------------------------------
-app.get('/', (req, res) => res.sendFile(path.join(docsDir, 'index.html')));
-app.get(['/terms', '/tos'], (req, res) => res.sendFile(path.join(docsDir, 'terms.html')));
-app.get('/privacy', (req, res) => res.sendFile(path.join(docsDir, 'privacy.html')));
-
-app.use(express.static(docsDir));
 
 app.listen(PORT, () => {
     console.log(`🌐 Web sunucusu ${PORT} portunda başlatıldı.`);
